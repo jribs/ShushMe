@@ -21,15 +21,11 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.gms.location.places.PlaceBuffer
 import kotlinx.android.synthetic.main.item_place_card.view.*
 
-class PlaceListAdapter
-/**
- * Constructor using the context and the db cursor
- *
- * @param context the calling context/activity
- */
-(private val mContext: Context) : RecyclerView.Adapter<PlaceListAdapter.PlaceViewHolder>() {
+class PlaceListAdapter(private val mContext: Context, var places: PlaceBuffer?):
+        RecyclerView.Adapter<PlaceListAdapter.PlaceViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceViewHolder {
@@ -41,11 +37,20 @@ class PlaceListAdapter
 
     override fun onBindViewHolder(holder: PlaceViewHolder, position: Int) {
 
+        if(places!=null){
+            with(places!!.get(position)){
+                holder.nameTextView.setText(name)
+                holder.addressTextView.setText(address)
+            }
+        }
     }
 
 
-    override fun getItemCount(): Int {
-        return 0
+    override fun getItemCount() = places?.count ?: 0
+
+    fun swapPlaceBuffer(placeBuffer: PlaceBuffer){
+        places = placeBuffer
+        notifyDataSetChanged()
     }
 
     class PlaceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

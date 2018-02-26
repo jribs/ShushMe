@@ -16,6 +16,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="24dp"
@@ -57,10 +58,24 @@
                 android:layout_gravity="center"
                 android:text="@string/enable_geofences"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Switch
+                android:id="@+id/switch_location_services"
+                android:text="@string/enable_location_services"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                />
+        </LinearLayout>
 
         <Button
+            android:id="@+id/button_add_new_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -88,6 +103,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <ImageView
+            android:layout_gravity="right|bottom"
+            android:src="@drawable/powered_by_google_on_white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            />
     </LinearLayout>
+
 
 </RelativeLayout>
