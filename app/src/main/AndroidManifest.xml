@@ -23,7 +23,11 @@
             android:name="com.google.android.geo.API_KEY"
             android:value=""
             />
+
+        <receiver android:name=".ShushMeGeofenceBroadcastReceiver"/>
     </application>
+
+
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>

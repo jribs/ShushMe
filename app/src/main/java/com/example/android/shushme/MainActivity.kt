@@ -20,6 +20,7 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
@@ -38,20 +39,30 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity(),
                     GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
+    companion object {
+        val TAG = MainActivity::class.java.simpleName
+        val LOCATION_PERMISSION_REQUEST = 0x4
+        val REQUEST_PLACES = 449
+    }
+
     // Member variables
     private var mAdapter: PlaceListAdapter? = null
     private lateinit var googleApiClient: GoogleApiClient
-
+    private lateinit var geoFencer: GeoFencer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         makeGoogleAPIClient()
+        geoFencer = GeoFencer(googleApiClient, this)
+
         setLocationSwitchListener()
         setupRecyclerView()
         setupAddLocationListener()
+        setupGeoFencings()
+
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -84,10 +95,10 @@ class MainActivity : AppCompatActivity(),
     }
 
     //GoogleAPI
-override fun onConnected(connectionHint: Bundle?) {
-    Log.d(TAG, "API Connection Successful")
-        refreshPlacesIDs()
-}
+    override fun onConnected(connectionHint: Bundle?) {
+        Log.d(TAG, "API Connection Successful")
+            refreshPlacesIDs()
+    }
 
     override fun onConnectionSuspended(p0: Int) {
         Log.d(TAG, "API Connection Suspended")
@@ -182,10 +193,31 @@ override fun onConnected(connectionHint: Bundle?) {
             return null
     }
 
-    companion object {
-        val TAG = MainActivity::class.java.simpleName
-        val LOCATION_PERMISSION_REQUEST = 0x4
-        val REQUEST_PLACES = 449
+
+    private fun setupGeoFencings() {
+       val sharedPreferences = getSharedPreferences(getString(R.string.sharedPreferences), Activity.MODE_PRIVATE)
+        loadGeofencingValue(sharedPreferences)
+        setGeoFencingListener(sharedPreferences)
+
     }
 
+
+
+    //3rd layer functions
+    private fun loadGeofencingValue(sharedPreferences: SharedPreferences) {
+        when (sharedPreferences.getBoolean("geoFencesEnabled", false)) {
+            true -> switch_enable_geofences.isChecked = true.also {geoFencer.registerGeoFences()}
+            false -> switch_enable_geofences.isChecked = false
+        }
+    }
+
+    private fun setGeoFencingListener(sharedPreferences: SharedPreferences){
+        switch_enable_geofences.setOnCheckedChangeListener { buttonView, isChecked ->
+            if(isChecked){
+                geoFencer.registerGeoFences()
+            } else{
+                geoFencer.unregisterGeoFences()
+            }
+        }
+    }
 }
