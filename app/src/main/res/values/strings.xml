@@ -7,4 +7,7 @@
     <string name="enable_geofences">Enable Geofences</string>
     <string name="enable_location_services">Enable Location Services</string>
     <string name="sharedPreferences" translatable="false">shushPrefs</string>
+    <string name="ringer_silence_permission">Ringer Silence Permission</string>
+    <string name="silent_mode_on">Silent Mode On</string>
+    <string name="silent_mode_off">Silent Mode Off</string>
 </resources>

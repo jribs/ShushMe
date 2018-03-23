@@ -18,7 +18,9 @@ package com.example.android.shushme
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.Activity
+import android.app.NotificationManager
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -60,13 +62,14 @@ class MainActivity : AppCompatActivity(),
         setupRecyclerView()
         setupAddLocationListener()
         setupGeoFencings()
+        setupRingerPermissions()
 
     }
-
 
     override fun onResume() {
         super.onResume()
         setLocationSwitch()
+        loadRingerPermission()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -85,13 +88,11 @@ class MainActivity : AppCompatActivity(),
 
             contentResolver.insert(PlaceContract.PlaceEntry.CONTENT_URI, contentValues)
             refreshPlacesIDs()
-
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
     }
 
     //GoogleAPI
@@ -107,7 +108,6 @@ class MainActivity : AppCompatActivity(),
     override fun onConnectionFailed(p0: ConnectionResult) {
         Log.d(TAG, "Connection to Google API Failed")
     }
-
 
 //2nd Layer Functions
     private fun setupRecyclerView() {
@@ -193,7 +193,6 @@ class MainActivity : AppCompatActivity(),
             return null
     }
 
-
     private fun setupGeoFencings() {
        val sharedPreferences = getSharedPreferences(getString(R.string.sharedPreferences), Activity.MODE_PRIVATE)
         loadGeofencingValue(sharedPreferences)
@@ -201,7 +200,11 @@ class MainActivity : AppCompatActivity(),
 
     }
 
+    private fun setupRingerPermissions() {
+            setRingerOnClickListener()
+            loadRingerPermission()
 
+    }
 
     //3rd layer functions
     private fun loadGeofencingValue(sharedPreferences: SharedPreferences) {
@@ -218,6 +221,23 @@ class MainActivity : AppCompatActivity(),
             } else{
                 geoFencer.unregisterGeoFences()
             }
+        }
+    }
+
+    private fun setRingerOnClickListener() {
+        switch_ringer_permission.setOnClickListener {
+            val ringerPermissionIntent = Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+            startActivity(ringerPermissionIntent)
+        }
+    }
+
+    private fun loadRingerPermission() {
+        val notifManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        when((android.os.Build.VERSION.SDK_INT>=24 && !notifManager.isNotificationPolicyAccessGranted)){
+            true    -> switch_ringer_permission.isChecked =false
+            false   -> switch_ringer_permission.apply {isChecked=false; isEnabled=false }
+        //switch_ringer_permission.isChecked=true.also {switch_ringer_permission.isEnabled = false}
         }
     }
 }
